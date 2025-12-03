@@ -1,0 +1,38 @@
+.clgAppSaleAddressInfoWrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.clgAppSaleAddressInfoTop{
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.clgAppSaleAddressHeading{
+    font-size: 12px;
+    font-weight: 400;
+    color:#000000;
+}
+
+.clgAppSalePersonalInfoSeperationLine{
+    height: 1px;
+    background: linear-gradient(90deg, #B6B6B6 0%, rgba(255, 255, 255, 0) 100%);
+    width: 40%;
+}
+
+.clgAppSaleAddressInfoBottom{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.clgAppSalerow{
+    display: flex;
+    gap: 60px;
+}
+
+.clgAppSaleFieldCell{
+    width: 335px;
+}

@@ -1,0 +1,38 @@
+.clgAppSaleAcademicInfoWrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+ 
+.clgAppSaleAcademicInfoTop{
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+ 
+.clgAppSaleAcademicHeading{
+    font-size: 12px;
+    font-weight: 400;
+    color:#000000;
+}
+ 
+.clgAppSalePersonalInfoSeperationLine{
+    height: 1px;
+    background: linear-gradient(90deg, #B6B6B6 0%, rgba(255, 255, 255, 0) 100%);
+    width: 40%;
+}
+ 
+.clgAppSaleAcademicInfoBottom{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+ 
+.clgAppSalerow{
+    display: flex;
+    gap: 31px;
+}
+ 
+.clgAppSaleFieldCell{
+    width: 100%;
+}

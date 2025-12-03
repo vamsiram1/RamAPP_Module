@@ -1,0 +1,70 @@
+.clgAppSalePersonalInforWrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    position: relative;
+}
+
+.clgAppSalePersonalInfoTop{
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.clgAppSalePersonalInfoHeading{
+    font-size: 12px;
+    font-weight: 400;
+    color:#000000;
+}
+
+.clgAppSalePersonalInfoSeperationLine{
+    height: 1px;
+    background: linear-gradient(90deg, #B6B6B6 0%, rgba(255, 255, 255, 0) 100%);
+    width: 40%;
+}
+
+.clgAppSalePersonalInfoBottom{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.clgAppSalerow{
+    display: flex;
+    gap: 31px;
+}
+
+.clgAppSaleFieldCell{
+    width: 100%;
+}
+
+.clgAppSaleUploadPictureWrapper{
+    position: absolute;
+    top: 30px;
+    right: 10px;
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.clgAppSaleUploadPicture{
+    display: flex;
+    justify-content: center;
+    align-self: center;
+}
+
+.schoolAppSaleFieldCell{
+  flex: 0 1 calc(33.33% - 31px);
+}
+
+.schoolRow {
+  display: flex;
+  gap: 31px;
+}
+
+/* Always 1/3 width even if empty */
+.schoolCell {
+  flex: 0 1 calc(33.33% - 31px);
+}

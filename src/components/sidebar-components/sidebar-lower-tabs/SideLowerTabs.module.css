@@ -1,0 +1,6 @@
+.lower_tabs{
+    display:flex;
+    justify-content: center;
+    gap:35px;
+    padding:18px 18px 61px 18px;
+}

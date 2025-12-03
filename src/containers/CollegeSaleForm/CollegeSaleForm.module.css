@@ -1,0 +1,47 @@
+.clgSalePageWrapper{
+    position: relative;
+    background-color: white;
+    border-radius: 6px;
+}
+
+.clgAppSaleFormMiddleSection{
+    padding: 11px 57px 320px 53px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background-color: #F6F8F9;
+}
+
+.clgAppFastSaleFormMiddleSection{
+    padding: 11px 57px 250px 53px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+      background-color: white;
+}
+
+.concessionSelection{
+    border: 2px solid #3425FF;
+}
+.clgAppSaleButtonsWrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.clgAppSaleButtons{
+    position: fixed;
+    bottom: 0px;
+    /* left: 10px; */
+    /* right: 10px; */
+    margin: 0px auto;
+    width: 80%;
+    height: 82px;
+    z-index:10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    background:linear-gradient(to bottom, #FFFFFFB2,#FFFFFF) ;
+}

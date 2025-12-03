@@ -1,0 +1,85 @@
+ 
+.clgAppSaleDetailsLeft{
+    display: flex;
+}
+ 
+.clgAppSaleDetailsHeadingStepper{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+ 
+.clgAppSaleDetails{
+    font-size: 28px;
+    font-weight: 700;
+    font-style: bold;
+    color: #252C32;
+    height:100%
+}
+ 
+img{
+    margin: 0;
+    padding: 0;
+}
+
+/* ---------------- Damaged Form Grid Layout ---------------- */
+.damagedFormWrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    background-color: #fff;
+    padding:10px;
+    border-radius: 6px;
+}
+
+.damagedForm{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding:51px 58px 20px 56px;
+    border:1px solid #E6E4F0;
+    border-radius: 6px;;
+}
+
+/* Base row styles */
+.damagedRow{
+    display: grid;
+    gap: 10px 31px; /* row-gap col-gap */
+    align-items: start;
+}
+
+/* Column presets matching other form patterns */
+.row3cols{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.row2cols{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.row1col{
+    grid-template-columns: 1fr;
+}
+
+/* Field cell spans full width of its grid cell */
+.damagedFieldCell{
+    width: 100%;
+}
+
+/* Submit button wrapper under textarea row */
+.damagedSubmitWrapper{
+    padding: 75px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Responsive: collapse to 2 cols then 1 col on smaller screens */
+@media (max-width: 1200px){
+    .row3cols{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 768px){
+    .row3cols, .row2cols{ grid-template-columns: 1fr; }
+}
+ 

@@ -1,0 +1,20 @@
+.container {
+  width: 100%;
+  border-radius: 6px;
+  padding: 22px;
+  background: rgba(255, 255, 255, 1);
+}
+
+.overviewContainer {
+  padding: 15px;
+  background-color: #F8F8F8;
+  border-radius: 12px;
+}
+
+.bottomActions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 50px;
+  padding: 20px 0;
+}

@@ -1,0 +1,12 @@
+.main_container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nav_tabs_wrapper {
+  align-self: flex-start;
+  width: fit-content;
+}
+
