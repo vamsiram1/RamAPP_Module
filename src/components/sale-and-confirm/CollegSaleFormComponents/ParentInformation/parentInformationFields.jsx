@@ -77,7 +77,7 @@ export const parentInfoFieldsLayout = [
 
 export const siblingFieldsLayout = [
   {id:"row1", fields:["fullName","relationType","selectClass"]},
-  {id:"row2", fields:["schoolName","",""]}
+  {id:"row2", fields:["schoolName","gender",""]}
 ]
 
 export const parentInfoFieldsLayoutForSchool = [

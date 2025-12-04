@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Formik, Form } from "formik";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "../CollegeSaleForm/CollegeSaleForm.module.css";
 
 import ApplicationSaleDetails from "../../components/sale-and-confirm/CollegSaleFormComponents/ApplicationDetails/ApplicationSaleDetails";
@@ -9,6 +9,7 @@ import ParentInformationForSchool from "../../components/sale-and-confirm/Colleg
 import OrientationInformation from "../../components/sale-and-confirm/CollegSaleFormComponents/OrientationInformation/OrientaionInformation";
 import AddressInformation from "../../components/sale-and-confirm/CollegSaleFormComponents/AddressInformation/AddressInformation";
 import PaymentPopup from "../../widgets/PaymentPopup/whole-payment-popup/PaymentPopup.jsx";
+import SuccessPage from "../../widgets/sale-done/SuccessPage.jsx";
 
 import leftArrowBlue from "../../assets/application-status/leftArrowBlueColor";
 import saleIcon from "../../assets/application-status/applicationSaleicon";
@@ -65,10 +66,13 @@ const initialValues = {
 
 const CollegeFastSale = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const applicationData = location.state?.applicationData;
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
+  const [showSuccessPage, setShowSuccessPage] = useState(false);
   const [formValues, setFormValues] = useState(initialValues);
   const [applicationDetailsData, setApplicationDetailsData] = useState(null);
+  const [submissionResponse, setSubmissionResponse] = useState(null);
   
   // For college fast sale, use "fast" sale type to show "Finish Fast Sale" button
   const saleType = "fast";
@@ -118,8 +122,35 @@ const CollegeFastSale = () => {
     setShowPaymentPopup(false);
   };
 
+  const handleBack = () => {
+    // Navigate back to application status table
+    navigate('/scopes/application/status');
+  };
+
+  const handleSubmissionSuccess = (response, details) => {
+    console.log("🎉 Fast Sale submission successful!");
+    console.log("Response:", response);
+    console.log("Details:", details);
+    
+    // Store response
+    setSubmissionResponse(response);
+    
+    // Close payment popup
+    setShowPaymentPopup(false);
+    
+    // Show success page
+    setShowSuccessPage(true);
+  };
+
+  const handleBackFromSuccess = () => {
+    // Navigate back to application status table from success page
+    navigate('/scopes/application/status');
+  };
+
   return (
     <>
+    {!showSuccessPage ? (
+      <>
     <Formik
       initialValues={initialValues}
       onSubmit={(values) => {
@@ -198,6 +229,7 @@ const CollegeFastSale = () => {
                 variant={"secondaryWithExtraPadding"}
                 lefticon={leftArrowBlue}
                 type="button"
+                onClick={handleBack}
               />
 
               <Button
@@ -224,8 +256,20 @@ const CollegeFastSale = () => {
           detailsObject={applicationData}
           type="college"
           saleType={saleType}
+          onSuccess={handleSubmissionSuccess}
         />
       )}
+      </>
+    ) : (
+      <SuccessPage 
+        applicationNo={applicationData?.applicationNo}
+        studentName={formValues?.firstName + " " + formValues?.surName}
+        campus={formValues?.campusName}
+        zone={applicationData?.zone}
+        onBack={handleBackFromSuccess}
+        statusType="sale"
+      />
+    )}
     </>
   );
 };

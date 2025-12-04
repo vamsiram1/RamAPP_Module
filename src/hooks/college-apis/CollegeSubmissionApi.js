@@ -386,9 +386,9 @@ export const mapCollegeApplicationSaleToPayload = (formData, paymentData, detail
   const siblings = (formData.siblings || []).map(sibling => ({
     fullName: toString(sibling.fullName),
     schoolName: toString(sibling.schoolName),
-    classId: toNumber(sibling.selectClass),
-    relationTypeId: toNumber(sibling.relationType),
-    genderId: toNumber(sibling.gender),
+    classId: toNumber(sibling.classId),
+    relationTypeId: toNumber(sibling.relationTypeId),
+    genderId: toNumber(sibling.genderId) || 0,
     createdBy: 0
   }));
 
@@ -907,9 +907,9 @@ export const mapCollegeApplicationSaleCompleteToPayload = (formData, paymentData
   const siblings = (formData.siblings || []).map(sibling => ({
     fullName: toString(sibling.fullName),
     schoolName: toString(sibling.schoolName),
-    classId: toNumber(sibling.selectClass || sibling.classId),
-    relationTypeId: toNumber(sibling.relationType || sibling.relationTypeId),
-    genderId: toNumber(sibling.gender || sibling.genderId),
+    classId: toNumber(sibling.classId),
+    relationTypeId: toNumber(sibling.relationTypeId),
+    genderId: toNumber(sibling.genderId) || 0,
     createdBy: 0
   }));
 
@@ -1388,9 +1388,9 @@ export const mapCollegeApplicationSaleUpdateToPayload = (formData, paymentData, 
   const siblings = (formData.siblings || []).map(sibling => ({
     fullName: toString(sibling.fullName),
     schoolName: toString(sibling.schoolName),
-    classId: toNumber(sibling.selectClass || sibling.classId),
-    relationTypeId: toNumber(sibling.relationType || sibling.relationTypeId),
-    genderId: toNumber(sibling.gender || sibling.genderId),
+    classId: toNumber(sibling.classId),
+    relationTypeId: toNumber(sibling.relationTypeId),
+    genderId: toNumber(sibling.genderId) || 0,
     createdBy: 0
   }));
 

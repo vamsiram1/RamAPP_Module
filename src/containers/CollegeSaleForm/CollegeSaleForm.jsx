@@ -14,6 +14,7 @@ import ConcessionInformation from "../../components/sale-and-confirm/CollegSaleF
 import ExtraConcession from "../../components/sale-and-confirm/CollegSaleFormComponents/ExtraConcession/ExtraConcession";
 import AcademicInformation from "../../components/sale-and-confirm/CollegSaleFormComponents/AcademicInformation/AcademicInformation";
 import PaymentPopup from "../../widgets/PaymentPopup/whole-payment-popup/PaymentPopup.jsx";
+import SuccessPage from "../../widgets/sale-done/SuccessPage.jsx";
 
 import leftArrowBlueColor from "../../assets/application-status/leftArrowBlueColor";
 import applicationSaleicon from "../../assets/application-status/applicationSaleicon";
@@ -30,8 +31,10 @@ const CollegeSalePage = () => {
   const [joiningClass, setJoiningClass] = useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
+  const [showSuccessPage, setShowSuccessPage] = useState(false);
   const [formValues, setFormValues] = useState(null);
   const [academicFormValues, setAcademicFormValues] = useState(null);
+  const [submissionResponse, setSubmissionResponse] = useState(null);
   
   // State to store data from ApplicationSaleDetails
   const [applicationDetailsData, setApplicationDetailsData] = useState(null);
@@ -173,6 +176,26 @@ const CollegeSalePage = () => {
       console.log("🔙 Normal Mode: Going back to previous page");
       navigate(-1);
     }
+  };
+
+  const handleSubmissionSuccess = (response, details) => {
+    console.log("🎉 College Sale submission successful!");
+    console.log("Response:", response);
+    console.log("Details:", details);
+    
+    // Store response
+    setSubmissionResponse(response);
+    
+    // Close payment popup
+    setShowPaymentPopup(false);
+    
+    // Show success page
+    setShowSuccessPage(true);
+  };
+
+  const handleBackFromSuccess = () => {
+    // Navigate back to application status table from success page
+    navigate('/scopes/application/status');
   };
 
   // Auto-populate form fields when in edit mode
@@ -1239,6 +1262,8 @@ const CollegeSalePage = () => {
 
   return (
     <>
+    {!showSuccessPage ? (
+      <>
     <Formik
       initialValues={initialValues}
       validationSchema={clgActualSaleValidationSchema()}
@@ -1482,6 +1507,18 @@ const CollegeSalePage = () => {
         collegeFormData={formValues}
         collegeAcademicFormData={academicFormValues}
         saleType="regular"
+        onSuccess={handleSubmissionSuccess}
+      />
+    )}
+    </>
+    ) : (
+      <SuccessPage 
+        applicationNo={applicationData?.applicationNo}
+        studentName={formValues?.firstName + " " + formValues?.surName}
+        campus={formValues?.campusName}
+        zone={applicationData?.zone}
+        onBack={handleBackFromSuccess}
+        statusType="sale"
       />
     )}
     </>

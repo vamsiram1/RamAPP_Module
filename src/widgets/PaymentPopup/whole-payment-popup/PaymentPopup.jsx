@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./PaymentPopup.module.css";
 import PopupHeader from "../popup-headerpart/PopupHeader";
 import PopupNavTabs from "../popup-navtabs/PopupNavTabs";
@@ -9,6 +9,7 @@ import CardForms from "../popup-formspart/CardForms";
 import Button from "../../Button/Button";
 import { submitSchoolApplicationSale, mapFormDataToPayload, submitSchoolFastSale, mapFormDataToFastSalePayload, submitSchoolApplicationSaleCreate, mapSchoolApplicationSaleToPayload } from "../../../hooks/school-apis/SchoolSubmissionApi";
 import { submitCollegeApplicationConfirmation, mapCollegeFormDataToPayload, submitCollegeApplicationSale, mapCollegeApplicationSaleToPayload, submitCollegeFastSale, mapCollegeFastSaleToPayload, submitCollegeApplicationSaleComplete, mapCollegeApplicationSaleCompleteToPayload } from "../../../hooks/college-apis/CollegeSubmissionApi";
+import { getCurrentDate } from "../../../utils/getCurrentDate";
 
 const PaymentPopup = ({ 
   onClose, 
@@ -57,6 +58,15 @@ const PaymentPopup = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  // Set current date when component mounts
+  useEffect(() => {
+    const currentDate = getCurrentDate();
+    setPaymentFormData((prev) => ({
+      ...prev,
+      paymentDate: currentDate
+    }));
+  }, []);
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
