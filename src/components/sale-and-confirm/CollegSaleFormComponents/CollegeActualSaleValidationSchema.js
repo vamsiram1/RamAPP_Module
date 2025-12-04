@@ -33,7 +33,7 @@ const clgActualSaleValidationSchema = (maxConcessionLimit = 999999) =>
     // ===================================================
     firstName: Yup.string()
       .trim()
-      // .required("First name is required")
+      .required("First name is required")
       .matches(onlyLettersSingleSpace, "Only alphabets allowed, single space only"),
 
     surName: Yup.string()
@@ -56,7 +56,7 @@ const clgActualSaleValidationSchema = (maxConcessionLimit = 999999) =>
       .test("ageCheck", "Must be 15 years or above", validateAge15Plus),
 
     aadharCardNo: Yup.string()
-      // .required("Aadhar number is required")
+      .required("Aadhar number is required")
       .matches(/^[0-9]{12}$/, "Aadhar must be 12 digits")
       .matches(aadharRegex, "Invalid Aadhar number"),
 

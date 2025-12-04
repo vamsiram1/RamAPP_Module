@@ -4,10 +4,11 @@ import styles from "./ApplicationSaleDetails.module.css";
 import leftArrow from "../../../../assets/application-status/Frame 1410092236.svg";
 
 import { useGetApplicationHeaderValues } from "../../../../queries/saleApis/clgSaleApis";
+import ProgressHeader from "../../../../widgets/ProgressHeader/ProgressHeader";
 
 const ApplicationSaleDetails = ({ saleName, onDataLoaded, applicationNo, onBack }) => {
   // 🔥 Fetch API - use applicationNo from props (passed from table), fallback to hardcoded value only for development/testing
-  const effectiveApplicationNo = applicationNo || "2875074";
+  const effectiveApplicationNo = applicationNo;
   
   if (applicationNo) {
     console.log("✅ ApplicationSaleDetails - Using applicationNo from table:", applicationNo);
@@ -124,7 +125,7 @@ const ApplicationSaleDetails = ({ saleName, onDataLoaded, applicationNo, onBack 
           <p className={styles.clgAppSaleDetails}>
             Application {saleName}
           </p>
-          <div>stepper</div>
+          <ProgressHeader step={0} totalSteps={2} />
         </div>
       </div>
 
