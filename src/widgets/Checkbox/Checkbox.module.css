@@ -32,11 +32,14 @@
   border: 1.5px solid #575757;
   border-radius: 4px; 
   background-color: #fff;
+  transition: all 0.2s ease;
 }
 
 .checkbox_wrapper input[type="checkbox"]:checked + .checkbox_label::before {
+  background-color: #3425FF;
+  border-color: #3425FF;
   content: "✔"; 
-  color: #575757;
+  color: #fff;
   text-align: center;
   line-height: 18px; 
   font-size: 14px; 

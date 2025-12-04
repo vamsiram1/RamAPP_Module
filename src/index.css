@@ -1,5 +1,12 @@
  
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100;200;300;400;500;600;700;800&display=swap");
+
+/* Set global accent color for checkboxes, radio buttons, etc. */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: #3425FF;
+}
+
 body {
   margin: 0;
   font-family: 'Segoe UI';

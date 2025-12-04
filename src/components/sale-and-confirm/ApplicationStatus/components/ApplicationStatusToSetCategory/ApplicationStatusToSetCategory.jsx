@@ -267,7 +267,7 @@ const ApplicationStatus = () => {
   // Set to 'school' by default
   useEffect(() => {
     // Always set to 'school' on component mount
-    localStorage.setItem('category', 'colege');
+    // localStorage.setItem('category', 'colege');
   }, []);
  
   const category = localStorage.getItem('category') || 'school'; // Default to school
@@ -342,7 +342,7 @@ const ApplicationStatus = () => {
  
   // Handle navigation to sale page (for school category)
   const handleNavigateToSalePage = (applicationData) => {
-    navigate('/school-application-sale', {
+    navigate('/scopes/application/status/school-application-sale', {
       state: { applicationData }
     });
   };
@@ -517,5 +517,6 @@ const ApplicationStatus = () => {
 };
  
 export default ApplicationStatus;
- 
- 
+
+
+

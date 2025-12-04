@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./Gender.module.css";
 
 const Gender = ({ name, label = "Gender", value, onChange }) => {
@@ -19,16 +19,18 @@ const Gender = ({ name, label = "Gender", value, onChange }) => {
   // Initialize with normalized value
   const initialValue = normalizeGenderValue(value);
   const [selected, setSelected] = useState(initialValue);
+  const prevValueRef = useRef(value);
 
-  // Sync selected state when value prop changes (controlled component)
+  // Sync selected state when value prop changes from parent (controlled component)
   useEffect(() => {
-    const normalized = normalizeGenderValue(value);
-    console.log("🔄 Gender component: Value prop changed. Original:", value, "Normalized:", normalized, "Current selected:", selected);
-    if (normalized !== selected) {
-      console.log("✅ Gender component: Updating selected from", selected, "to", normalized);
+    // Only update if value actually changed from outside (not from our own click)
+    if (value !== prevValueRef.current) {
+      const normalized = normalizeGenderValue(value);
+      console.log("🔄 Gender component: Value prop changed from parent. Original:", value, "Normalized:", normalized);
       setSelected(normalized);
+      prevValueRef.current = value;
     }
-  }, [value]); // Only depend on value, not selected
+  }, [value]);
 
   const genderOptions = [
     { id: 1, label: "Male", value: "MALE" },
@@ -36,7 +38,14 @@ const Gender = ({ name, label = "Gender", value, onChange }) => {
   ];
 
   const handleSelect = (val) => {
+    console.log("👆 Gender clicked:", val);
+    
+    // Update local state immediately for instant UI feedback
     setSelected(val);
+    
+    // Update the ref to prevent useEffect from overwriting
+    prevValueRef.current = val;
+    
     // Call onChange with event-like object for Formik compatibility
     // Formik expects: onChange(e) where e.target.value contains the value
     if (onChange) {
