@@ -41,6 +41,7 @@ const CampusForm = ({
   setIsInsertClicked,
   isUpdate = false,
   editId,
+  setCallTable,
 }) => {
  
   // ---------------- SELECTED KEYS ----------------
@@ -285,10 +286,9 @@ const CampusForm = ({
       applicationSeriesList={applicationSeries}
       isUpdate={isUpdate}
       editId={editId}
+      setCallTable={setCallTable}
     />
   );
 };
  
 export default CampusForm;
- 
- 

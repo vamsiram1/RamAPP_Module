@@ -52,6 +52,7 @@ const extractApiError = (err) => {
 };
 
 /* --- DistributeForm --- */
+/* --- DistributeForm --- */
 const DistributeForm = ({
   formType = "Zone",
   onSubmit,
@@ -69,11 +70,13 @@ const DistributeForm = ({
   skipAppNoPatch = false,
   onSeriesSelect,
   applicationSeriesList,
+  setCallTable,
 }) => {
-
   const employeeId = localStorage.getItem("empId");
   const category = localStorage.getItem("category");
-
+  const [showPopup, setShowPopup] = useState(false);
+  const [pendingValues, setPendingValues] = useState(null);
+ 
   const [formError, setFormError] = useState(null);
   console.log("Form Type:", formType);
   const fieldsForType = useMemo(() => getFieldsForType(formType), [formType]);
@@ -94,72 +97,133 @@ const DistributeForm = ({
     return baseValues;
   }, [fieldsForType, initialValues, backendValues, isUpdate]);
   const buttonLabel = isUpdate ? "Update" : "Insert";
-  const handleSubmit = async (rawValues) => {
-    setFormError(null);
-
+  // const handleSubmit = async () => {
+  //   if (!pendingValues) return;
+  //   setFormError(null);
+ 
+  //   try {
+  //     const values = { ...pendingValues };
+  //     console.log("Values: ", values);
+ 
+  //     // Force middleware app-from if used
+  //     if (
+  //       appNoFormMode === "middleware" &&
+  //       middlewareAppNoFrom != null &&
+  //       middlewareAppNoFrom !== ""
+  //     ) {
+  //       values.applicationNoFrom = String(middlewareAppNoFrom);
+  //     }
+ 
+  //     // light guards (Yup still validates)
+  //     if (!values.academicYearId) {
+  //       throw new Error("Please select a valid Academic Year.");
+  //     }
+  //     if (!values.issuedToEmpId && !values.issuedToId) {
+  //       throw new Error("Please select a valid employee for 'Issued To'.");
+  //     }
+ 
+  //     const t = String(formType || "")
+  //       .trim()
+  //       .toLowerCase();
+ 
+  //     if (isUpdate) {
+  //       if (editId === undefined || editId === null) {
+  //         throw new Error("Missing editId for update call.");
+  //       }
+ 
+  //       let resp;
+  //       if (t === "zone") resp = await updateZone(editId, values,employeeId);
+  //       else if (t === "dgm") resp = await updateDgm(editId, values,employeeId);
+  //       else if (t === "campus") resp = await updateCampus(editId, values,employeeId,category);
+  //       else throw new Error(`Unknown formType "${formType}" for update.`);
+ 
+  //       onSubmit?.({ ...values, id: editId, _mode: "update" });
+  //       setIsInsertClicked?.(false);
+  //       setCallTable?.(true);
+  //       return resp;
+  //     }
+ 
+  //     // console.log("Form Values Before sending to middleware: ", formValues);
+  //     // Create flow
+  //     const resp = await handlePostSubmit({
+  //       formValues: values,
+  //       formType: t,
+  //       employeeId: employeeId,
+  //       category: category,
+  //     });
+ 
+  //     onSubmit?.({ ...values, _mode: "create" });
+  //     setIsInsertClicked?.(true);
+  //     setCallTable(true);
+  //     return resp;
+  //   } catch (err) {
+  //     // <-- show the raw backend error (string body, message, or errors array/map)
+  //     const msg = extractApiError(err);
+  //     setFormError(msg);
+  //     console.error("handleSubmit error:", err);
+  //     // No rethrow so the UI can keep the message visible under the button
+  //     return null;
+  //   }
+  // };
+ 
+  const callSubmitApi = async () => {
+    if (!pendingValues) return;
+ 
+    console.log("🟡 CONFIRMED — Proceeding with API call...");
+    console.log("🚀 API CALL TRIGGERED with values:", pendingValues);
+ 
     try {
-      const values = { ...rawValues };
-      console.log("Values: ", values);
-
-      // Force middleware app-from if used
-      if (
-        appNoFormMode === "middleware" &&
-        middlewareAppNoFrom != null &&
-        middlewareAppNoFrom !== ""
-      ) {
-        values.applicationNoFrom = String(middlewareAppNoFrom);
-      }
-
-      // light guards (Yup still validates)
-      if (!values.academicYearId) {
-        throw new Error("Please select a valid Academic Year.");
-      }
-      if (!values.issuedToEmpId && !values.issuedToId) {
-        throw new Error("Please select a valid employee for 'Issued To'.");
-      }
-
-      const t = String(formType || "")
-        .trim()
-        .toLowerCase();
-
+      const values = pendingValues;
+      let resp;
+ 
       if (isUpdate) {
-        if (editId === undefined || editId === null) {
-          throw new Error("Missing editId for update call.");
-        }
-
-        let resp;
-        if (t === "zone") resp = await updateZone(editId, values,employeeId);
-        else if (t === "dgm") resp = await updateDgm(editId, values,employeeId);
-        else if (t === "campus") resp = await updateCampus(editId, values,employeeId,category);
-        else throw new Error(`Unknown formType "${formType}" for update.`);
-
+        const t = formType.toLowerCase();
+ 
+        console.log(`🔄 UPDATE API -> Type: ${t}, ID: ${editId}`);
+ 
+        if (t === "zone") resp = await updateZone(editId, values, employeeId);
+        else if (t === "dgm")
+          resp = await updateDgm(editId, values, employeeId);
+        else if (t === "campus")
+          resp = await updateCampus(editId, values, employeeId, category);
+ 
+        console.log("✅ API SUCCESS — Update Response:", resp);
+ 
         onSubmit?.({ ...values, id: editId, _mode: "update" });
         setIsInsertClicked?.(false);
-        return resp;
+      } else {
+        console.log("🆕 CREATE API CALL INITIATED...");
+ 
+        resp = await handlePostSubmit({
+          formValues: values,
+          formType: formType.toLowerCase(),
+          employeeId,
+          category,
+        });
+ 
+        console.log("✅ API SUCCESS — Create Response:", resp);
+ 
+        onSubmit?.({ ...values, _mode: "create" });
+        setIsInsertClicked?.(true);
+        setCallTable?.(true);
       }
-
-      // console.log("Form Values Before sending to middleware: ", formValues);
-      // Create flow
-      const resp = await handlePostSubmit({
-        formValues: values,
-        formType: t,
-        employeeId: employeeId,
-        category: category,
-      });
-
-      onSubmit?.({ ...values, _mode: "create" });
-      setIsInsertClicked?.(true);
+ 
+      console.log("🎉 FORM SUBMISSION SUCCESS — Closing popup...");
+      setShowPopup(false);
       return resp;
     } catch (err) {
-      // <-- show the raw backend error (string body, message, or errors array/map)
-      const msg = extractApiError(err);
-      setFormError(msg);
-      console.error("handleSubmit error:", err);
-      // No rethrow so the UI can keep the message visible under the button
-      return null;
+      console.error("❌ API FAILED — Error:", err);
+      setFormError(extractApiError(err));
+      setShowPopup(false);
     }
   };
-
+ 
+  const beforeSubmit = (values) => {
+    console.log("🔥 BEFORE POPUP — Form Values:", values);
+    setPendingValues(values);
+    setShowPopup(true); // show confirmation popup
+  };
+ 
   const renderField = (name, values, setFieldValue, touched, errors) => {
     const cfg = fieldMap[name];
     if (!cfg) return null;
@@ -198,20 +262,20 @@ const DistributeForm = ({
             value={String(values[cfg.name] ?? "")}
             searchResults={searchResults}
             onChange={(e) => {
-            const val = e.target.value;
-            setFieldValue(cfg.name, val);
-
-            if (cfg.name === "applicationFee") {
-              onApplicationFeeSelect?.(Number(val));
-            }
-
-            if (cfg.name === "applicationSeries") {
-              const found = applicationSeriesList?.find(
-                (s) => s.displaySeries === val
-              );
-              onSeriesSelect?.(found?.displaySeries || null);
-            }
-          }}
+              const val = e.target.value;
+              setFieldValue(cfg.name, val);
+ 
+              if (cfg.name === "applicationFee") {
+                onApplicationFeeSelect?.(Number(val));
+              }
+ 
+              if (cfg.name === "applicationSeries") {
+                const found = applicationSeriesList?.find(
+                  (s) => s.displaySeries === val
+                );
+                onSeriesSelect?.(found?.displaySeries || null);
+              }
+            }}
             disabled={dropdownDisabled}
           />
           {errorMessage && <div className={styles.error}>{errorMessage}</div>}
@@ -232,11 +296,7 @@ const DistributeForm = ({
       isAvailableAppTo ||
       !!cfg.disabled;
     if (isIssueDate) {
-      return (
-        <CurrentDate
-        label={"Issued Date"}
-        />
-      );
+      return <CurrentDate label={"Issued Date"} />;
     }
     const handleChange = isAppFrom
       ? (e) => {
@@ -267,48 +327,63 @@ const DistributeForm = ({
     [formType]
   );
   return (
-    <Formik
-      initialValues={formInitialValues}
-      validationSchema={validationSchema}
-      validationContext={{ formType }}
-      onSubmit={(values, actions) => {
-        handleSubmit(values);
-      }}
-      enableReinitialize={false}
-    >
-      {({ values, setFieldValue, touched, errors }) => (
-        <Form className="distribute-form">
-          <BackendPatcher
-            appNoFormMode={appNoFormMode}
-            middlewareAppNoFrom={middlewareAppNoFrom}
-            backendValues={backendValues}
-          />
-          <AutoCalcAppTo />
-          <ValuesBridge onValuesChange={onValuesChange} />
-          <div className={styles.form_rows}>
-            {fieldLayouts[formType].map((row) => (
-              <div key={row.id} className={styles.field_row}>
-                {row.fields.map((fname) => (
-                  <div key={fname} className={styles.field_cell}>
-                    {renderField(fname, values, setFieldValue, touched, errors)}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-          <Button
-            type="submit"
-            buttonname={buttonLabel}
-            righticon={rightarrow}
-            margin={"0"}
-            variant="primary"
-            disabled={false}
-          />
-          {formError && <div className={styles.error}>{formError}</div>}
-        </Form>
-      )}
-    </Formik>
+    <>
+      <Popup
+        isOpen={showPopup}
+        name={buttonLabel}
+        onClose={() => setShowPopup(false)}
+        onConfirm={callSubmitApi}
+      />
+      <Formik
+        initialValues={formInitialValues}
+        validationSchema={validationSchema}
+        validationContext={{ formType }}
+        onSubmit={(values) => {
+          console.log("📝 FORMIK SUBMIT TRIGGERED — Raw Values:", values);
+          beforeSubmit(values);
+        }}
+        enableReinitialize={false}
+      >
+        {({ values, setFieldValue, touched, errors }) => (
+          <Form className="distribute-form">
+            <BackendPatcher
+              appNoFormMode={appNoFormMode}
+              middlewareAppNoFrom={middlewareAppNoFrom}
+              backendValues={backendValues}
+            />
+            <AutoCalcAppTo />
+            <ValuesBridge onValuesChange={onValuesChange} />
+            <div className={styles.form_rows}>
+              {fieldLayouts[formType].map((row) => (
+                <div key={row.id} className={styles.field_row}>
+                  {row.fields.map((fname) => (
+                    <div key={fname} className={styles.field_cell}>
+                      {renderField(
+                        fname,
+                        values,
+                        setFieldValue,
+                        touched,
+                        errors
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <Button
+              type="submit"
+              buttonname={buttonLabel}
+              righticon={rightarrow}
+              margin={"0"}
+              variant="primary"
+              disabled={false}
+            />
+            {formError && <div className={styles.error}>{formError}</div>}
+          </Form>
+        )}
+      </Formik>
+    </>
   );
 };
-
+ 
 export default DistributeForm;

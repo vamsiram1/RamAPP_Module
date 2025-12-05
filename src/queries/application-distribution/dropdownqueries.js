@@ -325,14 +325,14 @@ export const useCampusbyCampaignId = (campaignId) =>
     enabled: !!campaignId,
   });
  
-export const useGetTableDetailsByEmpId = (empId,issuedToTypeId) =>
+export const useGetTableDetailsByEmpId = (empId,issuedToTypeId, shouldFetch = true) =>
   useQuery({
     queryKey: ["Table Details with Id: ", empId,issuedToTypeId],
     queryFn: () => getTableDetailsByEmpId(empId,issuedToTypeId),
-    enabled: !!empId && !!issuedToTypeId,
+    enabled: !!empId && !!issuedToTypeId && shouldFetch,
   });
-
-export const useGetRangeAvailAndApp = (academicYearId, cityId, stateId) =>
+  
+  export const useGetRangeAvailAndApp = (academicYearId, cityId, stateId) =>
   useQuery({
     // Updated queryKey to include stateId for accurate caching
     queryKey: ["FallbackRangeInfo", academicYearId, cityId, stateId],

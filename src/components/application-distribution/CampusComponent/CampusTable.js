@@ -20,19 +20,18 @@ const fieldMapping = {
   campaignAreaName: "campaignAreaName",
 };
 
-// 🔑 Accept onSelectionChange prop
-const CampusTable = ({ onSelectionChange }) => {
-
+const CampusTable = ({ onSelectionChange,callTable }) => {
+ 
   const empId = localStorage.getItem("empId");
-
+ 
   const {
     data: tableData,
     isLoading,
     error,
-  } = useGetTableDetailsByEmpId(empId,4);
-
+  } = useGetTableDetailsByEmpId(empId,4,callTable);
+ 
   console.log("Table Data: ",tableData);
-
+ 
   // Normalize API -> table rows
   const transformedData = useMemo(
     () =>
@@ -56,7 +55,7 @@ const CampusTable = ({ onSelectionChange }) => {
       })),
     [tableData]
   );
-
+ 
   const columns = [
     {
       accessorKey: "applicationForm",
@@ -90,18 +89,18 @@ const CampusTable = ({ onSelectionChange }) => {
       cell: ({ row }) => row.original.campusName,
     },
   ];
-
+ 
   // Local table state
   const [data, setData] = useState(transformedData);
   const [pageIndex, setPageIndex] = useState(0);
   const pageSize = 10;
-
+ 
   // Sync local rows when API data changes
   useEffect(() => {
     setData(transformedData);
     setPageIndex(0); // reset to first page on fresh data
   }, [transformedData]);
-
+ 
   // 🔑 FIXED: Row selection logic using functional update
   const handleSelectRow = (rowData, checked) => {
     // Use functional update to prevent stale state issue during bulk selection
@@ -109,19 +108,19 @@ const CampusTable = ({ onSelectionChange }) => {
         const updatedData = prevData.map((item) =>
             item.id === rowData.id ? { ...item, isSelected: checked } : item
         );
-        
+       
         // Find all selected rows in the calculated next state
         const selected = updatedData.filter((item) => item.isSelected);
-
+ 
         // Send selected rows back to parent
         if (onSelectionChange) {
             onSelectionChange(selected);
         }
-
+ 
         return updatedData; // Return the new state
     });
   };
-
+ 
   // Apply updates from the form
   const handleUpdate = (updatedRow) => {
     setData((prev) =>
@@ -156,7 +155,7 @@ const { data: seriesData, refetch: refetchApplicationSeries} = useGetApplication
       null, // amount (dynamic)
       false // isPro default
     );
-
+ 
 const {data:distributionId,refetch: refetchDistributionId} = useGetDistributionId(
   null,
   null,
@@ -164,7 +163,7 @@ const {data:distributionId,refetch: refetchDistributionId} = useGetDistributionI
   null,
   false,
 )
-
+ 
   // Modal wiring (outside TableWidget)
     const [openingForm, setOpeningForm] = useState(false);
   const [open, setOpen] = useState(false);
@@ -173,11 +172,11 @@ const {data:distributionId,refetch: refetchDistributionId} = useGetDistributionI
   console.log("Row Selected:", row);
   setOpeningForm(true);
   setSelectedRow(row);
-
+ 
   setOpen(true);
   setOpeningForm(false);
 };
-
+ 
   // Loading & error states
   if (isLoading) return <div style={{ padding: 16 }}>Table data is loading…</div>;
   if (error)
@@ -186,7 +185,7 @@ const {data:distributionId,refetch: refetchDistributionId} = useGetDistributionI
         Failed to load table data.
       </div>
     );
-
+ 
   return (
     <>{openingForm && (
         <div
@@ -211,8 +210,8 @@ const {data:distributionId,refetch: refetchDistributionId} = useGetDistributionI
           onRowUpdateClick={handleRowUpdateClick}
         />
       )}
-
-
+ 
+ 
       <DistributionUpdateForm
         open={open}
         onClose={() => setOpen(false)}
@@ -224,5 +223,5 @@ const {data:distributionId,refetch: refetchDistributionId} = useGetDistributionI
     </>
   );
 };
-
+ 
 export default CampusTable;

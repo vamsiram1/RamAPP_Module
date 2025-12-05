@@ -6,17 +6,17 @@ import { useGetTableDetailsByEmpId,useGetApplicationSeriesForEmpId} from "../../
 import Spinner from "../../commoncomponents/Spinner";
 
 // 🔑 Accept onSelectionChange prop
-const DgmTable = ({ onSelectionChange }) => {
-
+const DgmTable = ({ onSelectionChange, callTable }) => {
+ 
   const empId = localStorage.getItem("empId");
-
+ 
   const {
     data: tableData,
     isLoading,
     error,
-  } = useGetTableDetailsByEmpId(empId,3);
+  } = useGetTableDetailsByEmpId(empId,3,callTable);
   console.log("Table Data: ", tableData);
-
+ 
   // Normalize API -> table rows
   const transformedData = useMemo(
     () =>
@@ -37,7 +37,7 @@ const DgmTable = ({ onSelectionChange }) => {
       })),
     [tableData]
   );
-
+ 
   const columns = [
     {
       accessorKey: "applicationForm",
@@ -71,20 +71,20 @@ const DgmTable = ({ onSelectionChange }) => {
       cell: ({ row }) => row.original.campusName,
     },
   ];
-
+ 
   // Local table state
   const [data, setData] = useState(transformedData);
   const [pageIndex, setPageIndex] = useState(0);
   const pageSize = 10;
   const [openingForm, setOpeningForm] = useState(false);
   // 🔑 No longer need selectedRows state here, it's handled in handleSelectRow
-
+ 
   // Keep local rows in sync when API data changes
   useEffect(() => {
     setData(transformedData);
     setPageIndex(0); // reset to first page on fresh data
   }, [transformedData]);
-
+ 
   // 🔑 FIXED: Row selection logic using functional update
   const handleSelectRow = (rowData, checked) => {
     // Use functional update to prevent stale state issue during bulk selection
@@ -92,19 +92,19 @@ const DgmTable = ({ onSelectionChange }) => {
         const updatedData = prevData.map((item) =>
             item.id === rowData.id ? { ...item, isSelected: checked } : item
         );
-
+ 
         // Find all selected rows in the calculated next state
         const selected = updatedData.filter((item) => item.isSelected);
-
+ 
         // Send selected rows back to parent
         if (onSelectionChange) {
             onSelectionChange(selected);
         }
-        
+       
         return updatedData; // Return the new state
     });
   };
-
+ 
    const {
     data: seriesData,
     refetch: refetchApplicationSeries
@@ -114,7 +114,7 @@ const DgmTable = ({ onSelectionChange }) => {
     null, // amount (dynamic)
     false // isPro default
   );
-
+ 
   // Apply updates returning from the form
   const handleUpdate = (updatedRow) => {
     setData((prev) =>
@@ -139,7 +139,7 @@ const DgmTable = ({ onSelectionChange }) => {
       )
     );
   };
-
+ 
   // Modal wiring (outside TableWidget)
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -147,7 +147,7 @@ const DgmTable = ({ onSelectionChange }) => {
   console.log("Row Selected:", row);
   setOpeningForm(true);
   setSelectedRow(row);
-
+ 
   setOpen(true);
   setOpeningForm(false);
 };
@@ -164,7 +164,7 @@ const DgmTable = ({ onSelectionChange }) => {
     issueDate: "issueDate",
     mobileNumber: "mobileNumber",
   };
-
+ 
   // Loading & error states
   if (isLoading) return <div style={{ padding: 16 }}>Table data is loading…</div>;
   if (error)
@@ -173,7 +173,7 @@ const DgmTable = ({ onSelectionChange }) => {
         Failed to load table data.
       </div>
     );
-
+ 
   return (
     <>
     {openingForm && (
@@ -199,7 +199,7 @@ const DgmTable = ({ onSelectionChange }) => {
           onRowUpdateClick={handleRowUpdateClick}
         />
       )}
-
+ 
       <DistributionUpdateForm
         open={open}
         onClose={() => setOpen(false)}
@@ -211,5 +211,5 @@ const DgmTable = ({ onSelectionChange }) => {
     </>
   );
 };
-
+ 
 export default DgmTable;

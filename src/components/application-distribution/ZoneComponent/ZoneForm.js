@@ -45,6 +45,7 @@ const ZoneForm = ({
   setIsInsertClicked,
   isUpdate = false,
   editId,
+  setCallTable,
 }) => {
   // ---------------------  SELECTED VALUES -------------------------
   const [selectedStateId, setSelectedStateId] = useState(null);
@@ -52,36 +53,36 @@ const ZoneForm = ({
   const [selectedZoneId, setSelectedZoneId] = useState(null);
   const [selectedAcademicYearId, setSelectedAcademicYearId] = useState(null);
   const [issuedToEmpId, setIssuedToEmpId] = useState(null);
-
+ 
   const [selectApplicationFee, setSelectedApplicationFee] = useState(null);
-
+ 
   const [customAcademicYear, setCustomAcademicYear] = useState(null);
   const [selectedSeries, setSelectedSeries] = useState(null);
-
+ 
   // --------------------- INITIAL FORM VALUES -------------------------
   const [seedInitialValues, setSeedInitialValues] = useState({
     ...initialValues,
     academicYear: initialValues.academicYear || "2025-26",
   });
-
+ 
   // --------------------- BASIC DROPDOWNS ----------------------------
   const { data: statesRaw = [] } = useGetStateName();
   const { data: yearsRaw = [] } = useGetAcademicYears();
-
+ 
   const { data: citiesRaw = [] } = useGetCityByStateId(selectedStateId);
   const { data: zonesRaw = [] } = useGetZoneByCity(selectedCityId);
   const { data: employeesRaw = [] } = useGetEmployeesByZone(selectedZoneId);
-
+ 
   const { data: mobileNo } = useGetMobileNo(issuedToEmpId);
-
+ 
   const employeeId = localStorage.getItem("empId");
-
+ 
   // -------------------- APPLICATION FEE ----------------------------
   const { data: applicationFee = [] } = useGetAllFeeAmounts(
     employeeId,
     selectedAcademicYearId
   );
-
+ 
   // -------------------- APPLICATION SERIES -------------------------
   const { data: applicationSeries = [] } = useGetApplicationSeriesForEmpId(
     employeeId,
@@ -89,79 +90,79 @@ const ZoneForm = ({
     selectApplicationFee,
     false
   );
-
+ 
   console.log("Application Fee:", applicationFee.data);
   console.log("Application Fee Selected:", selectApplicationFee);
   console.log("Application Series:", applicationSeries);
-
+ 
   // --------------------- NORMALIZE ARRAYS --------------------------
   const statesData = useMemo(() => asArray(statesRaw), [statesRaw]);
   const yearsData = useMemo(() => asArray(yearsRaw), [yearsRaw]);
   const citiesData = useMemo(() => asArray(citiesRaw), [citiesRaw]);
   const zonesData = useMemo(() => asArray(zonesRaw), [zonesRaw]);
   const employeesData = useMemo(() => asArray(employeesRaw), [employeesRaw]);
-
+ 
   // ---------------------- BUILD OPTIONS ----------------------------
   const stateNames = useMemo(
     () => statesData.map(stateLabel).filter(Boolean),
     [statesData]
   );
-
+ 
   const academicYearNames = useMemo(() => {
     const allowed = ["2026-27", "2025-26", "2024-25"];
     const apiYears = yearsData.map(yearLabel).filter(Boolean);
-
+ 
     const filtered = allowed
       .filter((y) => apiYears.includes(y))
       .sort((a, b) => Number(b.split("-")[0]) - Number(a.split("-")[0]));
-
+ 
     if (customAcademicYear && !filtered.includes(customAcademicYear)) {
       return [customAcademicYear, ...filtered];
     }
-
+ 
     return filtered;
   }, [yearsData, customAcademicYear]);
-
+ 
   const academicYearSearchOptions = useMemo(
     () => yearsData.map(yearLabel),
     [yearsData]
   );
-
+ 
   const cityNames = citiesData.map(cityLabel);
   const zoneNames = zonesData.map(zoneLabel);
   const issuedToNames = employeesData.map(empLabel);
-
+ 
   // -------------------- LABEL → ID MAPS ---------------------------
   const stateNameToId = useMemo(() => {
     const m = new Map();
     statesData.forEach((s) => m.set(stateLabel(s), stateId(s)));
     return m;
   }, [statesData]);
-
+ 
   const yearNameToId = useMemo(() => {
     const m = new Map();
     yearsData.forEach((y) => m.set(yearLabel(y), yearId(y)));
     return m;
   }, [yearsData]);
-
+ 
   const cityNameToId = useMemo(() => {
     const m = new Map();
     citiesData.forEach((c) => m.set(cityLabel(c), cityId(c)));
     return m;
   }, [citiesData]);
-
+ 
   const zoneNameToId = useMemo(() => {
     const m = new Map();
     zonesData.forEach((z) => m.set(zoneLabel(z), zoneId(z)));
     return m;
   }, [zonesData]);
-
+ 
   const empNameToId = useMemo(() => {
     const m = new Map();
     employeesData.forEach((e) => m.set(empLabel(e), empId(e)));
     return m;
   }, [employeesData]);
-
+ 
   // -----------------------------------------------------------------------
   //      WHEN PARENT DROPDOWN CHANGES → RESET CHILD DROPDOWNS
   // -----------------------------------------------------------------------
@@ -180,43 +181,43 @@ const ZoneForm = ({
         setSelectedApplicationFee(null);
       }
     }
-
+ 
     // ---------------- STATE → RESET CITY, ZONE, EMPLOYEE ----------------
     if (values.stateName && stateNameToId.has(values.stateName)) {
       const id = stateNameToId.get(values.stateName);
       if (id !== selectedStateId) {
         setSelectedStateId(id);
-
+ 
         setSelectedCityId(null);
         setSelectedZoneId(null);
         setIssuedToEmpId(null);
         setSelectedApplicationFee(null);
       }
     }
-
+ 
     // ---------------- CITY → RESET ZONE, EMPLOYEE ----------------
     if (values.cityName && cityNameToId.has(values.cityName)) {
       const id = cityNameToId.get(values.cityName);
       if (id !== selectedCityId) {
         setSelectedCityId(id);
-
+ 
         setSelectedZoneId(null);
         setIssuedToEmpId(null);
         setSelectedApplicationFee(null);
       }
     }
-
+ 
     // ---------------- ZONE → RESET EMPLOYEE ----------------
     if (values.zoneName && zoneNameToId.has(values.zoneName)) {
       const id = zoneNameToId.get(values.zoneName);
       if (id !== selectedZoneId) {
         setSelectedZoneId(id);
-
+ 
         setIssuedToEmpId(null);
         setSelectedApplicationFee(null);
       }
     }
-
+ 
     // ---------------- EMPLOYEE SELECTED ----------------
     if (values.issuedTo && empNameToId.has(values.issuedTo)) {
       const id = empNameToId.get(values.issuedTo);
@@ -225,22 +226,22 @@ const ZoneForm = ({
       }
     }
   };
-
+ 
   const seriesObj = useMemo(() => {
   if (!selectedSeries) return null;
-
+ 
   const found = applicationSeries.find(
     (s) => s.displaySeries === selectedSeries
   );
-
+ 
   return found || null;
 }, [selectedSeries, applicationSeries]);
-
+ 
   const backendValues = useMemo(() => {
     const obj = {};
-
+ 
     if (mobileNo != null) obj.mobileNumber = String(mobileNo);
-
+ 
     if (issuedToEmpId != null) obj.issuedToEmpId = Number(issuedToEmpId);
     if (selectedAcademicYearId != null)
       obj.academicYearId = Number(selectedAcademicYearId);
@@ -249,7 +250,7 @@ const ZoneForm = ({
     if (selectedZoneId != null) obj.zoneId = Number(selectedZoneId);
     if (selectApplicationFee != null)
       obj.applicationFee = Number(selectApplicationFee);
-
+ 
     // ----------------- APPLICATION SERIES → SET FORM VALUES -----------------
       if (seriesObj) {
     obj.applicationSeries      = seriesObj.displaySeries;
@@ -258,7 +259,7 @@ const ZoneForm = ({
     obj.availableAppNoTo       = seriesObj.masterEndNo;
     obj.applicationNoFrom      = seriesObj.startNo;
   }
-
+ 
     return obj;
   }, [
     mobileNo,
@@ -270,7 +271,7 @@ const ZoneForm = ({
     selectedZoneId,
     selectApplicationFee,
   ]);
-
+ 
   // ---------------------------------------------------------------------
   //                 DYNAMIC OPTIONS FOR UI
   // ---------------------------------------------------------------------
@@ -284,7 +285,7 @@ const ZoneForm = ({
           applicationFee: Array.isArray(applicationFee)
   ? applicationFee.map((f) => String(f))
   : [],
-
+ 
       // FIX: applicationSeries default fallback
       applicationSeries: Array.isArray(applicationSeries)
         ? applicationSeries.map((s) => s.displaySeries)
@@ -300,7 +301,7 @@ const ZoneForm = ({
       applicationSeries,
     ]
   );
-
+ 
   return (
     <DistributeForm
       formType="Zone"
@@ -316,8 +317,9 @@ const ZoneForm = ({
       applicationSeriesList={applicationSeries}
       isUpdate={isUpdate}
       editId={editId}
+      setCallTable={setCallTable}
     />
   );
 };
-
+ 
 export default ZoneForm;

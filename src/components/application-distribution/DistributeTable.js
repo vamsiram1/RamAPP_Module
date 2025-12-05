@@ -8,26 +8,27 @@ import ZoneTable from "./ZoneComponent/ZoneTable";
 import styles from "./DistributeTable.module.css";
 import FileExport from "../sale-and-confirm/ApplicationStatus/components/ExportButton/FileExport";
 
-const DistributeTable = () => {
+ 
+const DistributeTable = ({callTable}) => {
   const { pathname } = useLocation();
-
+ 
   const [showExport, setShowExport] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
-
+ 
   // 🔥 Auto-close export dropdown when table type changes (zone → dgm → campus)
   useEffect(() => {
     setShowExport(false);
     setSelectedRows([]);
   }, [pathname]);
-
+ 
   const handleExportClick = () => {
     setShowExport((prev) => !prev);
   };
-
+ 
   // ---------------------------------------
   // Subtitle based on route
   // ---------------------------------------
-   const getSubtitleText = () => {
+  const getSubtitleText = () => {
     if (pathname.includes("zone"))
       return "List Of All The Distributed Application To Zone";
     if (pathname.includes("dgm"))
@@ -36,23 +37,23 @@ const DistributeTable = () => {
       return "List Of All The Distributed Application To Campus";
     return null;
   };
-
+ 
   // ---------------------------------------
   // Render Table Dynamically
   // ---------------------------------------
   const renderTable = () => {
     if (pathname.includes("zone"))
-      return <ZoneTable onSelectionChange={setSelectedRows} />;
-
+      return <ZoneTable onSelectionChange={setSelectedRows} callTable={callTable}/>;
+ 
     if (pathname.includes("dgm"))
-      return <DgmTable onSelectionChange={setSelectedRows} />;
-
+      return <DgmTable onSelectionChange={setSelectedRows} callTable={callTable}/>;
+ 
     if (pathname.includes("campus"))
-      return <CampusTable onSelectionChange={setSelectedRows} />;
-
+      return <CampusTable onSelectionChange={setSelectedRows} callTable={callTable}/>;
+ 
     return null;
   };
-
+ 
   return (
     <>
       <div className={styles.distribute_table_top}>
@@ -60,7 +61,7 @@ const DistributeTable = () => {
           <p className={styles.distribute_table_heading}>Distributed Applications</p>
           <p className={styles.distribute_table_sub}>{getSubtitleText()}</p>
         </div>
-
+ 
         <div className={styles.distribute_table_searchbox}>
           <Button
             buttonname="Export"
@@ -69,7 +70,7 @@ const DistributeTable = () => {
             onClick={handleExportClick}
             lefticon={uparrow}
           />
-
+ 
           {showExport && (
             <div style={{ position: "absolute", top: "87.5%", right: 0 }}>
               <FileExport
@@ -81,10 +82,10 @@ const DistributeTable = () => {
           )}
         </div>
       </div>
-
+ 
       {renderTable()}
     </>
   );
 };
-
+ 
 export default DistributeTable;

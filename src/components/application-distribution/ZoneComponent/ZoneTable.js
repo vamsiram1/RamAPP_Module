@@ -5,18 +5,19 @@ import DistributionUpdateForm from "../DistributionUpdateForm";
 import { useGetTableDetailsByEmpId ,useGetApplicationSeriesForEmpId,useGetDistributionId, useGetAllFeeAmounts} from "../../../queries/application-distribution/dropdownqueries";
 import Spinner from "../../commoncomponents/Spinner";
 
-const ZoneTable = ({ onSelectionChange}) => {
-
+ 
+const ZoneTable = ({ onSelectionChange,callTable}) => {
+ 
   const empId = localStorage.getItem("empId");
   const {
     data: tableData,
     isLoading,
     error,
-  } = useGetTableDetailsByEmpId(empId,2);
-
-
+  } = useGetTableDetailsByEmpId(empId,2,callTable);
+ 
+ 
   console.log("Table Data: ", tableData);
-
+ 
   // Normalize API -> table rows
   const transformedData = useMemo(
     () =>
@@ -43,7 +44,7 @@ const ZoneTable = ({ onSelectionChange}) => {
       })),
     [tableData]
   );
-
+ 
   const columns = [
     {
       accessorKey: "applicationNoFrom",
@@ -77,23 +78,23 @@ const ZoneTable = ({ onSelectionChange}) => {
       cell: ({ row }) => row.original.zoneName,
     },
   ];
-
+ 
   // Local state + paging
   const [data, setData] = useState(transformedData);
   const [pageIndex, setPageIndex] = useState(0);
   const pageSize = 10;
   const [selectedRows, setSelectedRows] = useState([]); // This state is actually redundant now
   const [openingForm, setOpeningForm] = useState(false);
-
+ 
   // Keep local data synced with API data
   useEffect(() => {
     setData(transformedData);
     setPageIndex(0); // reset to first page when fresh data arrives
   }, [transformedData]);
-
+ 
   const [feeOptions, setFeeOptions] = useState([]);
 const [seriesOptions, setSeriesOptions] = useState([]);
-
+ 
   const {
   data: seriesData,
   refetch: refetchApplicationSeries
@@ -103,9 +104,9 @@ const [seriesOptions, setSeriesOptions] = useState([]);
   null, // amount (dynamic)
   false // isPro default
 );
-
+ 
 const {data: amounts,refetch: refetchApplicationFeeAmount} = useGetAllFeeAmounts(null, null);
-
+ 
   // 🔑 UPDATED: Row selection toggle using functional update for reliability
   const handleSelectRow = (rowData, checked) => {
     // Use functional update to ensure we operate on the freshest state
@@ -113,21 +114,21 @@ const {data: amounts,refetch: refetchApplicationFeeAmount} = useGetAllFeeAmounts
         const updatedData = prevData.map((item) =>
             item.id === rowData.id ? { ...item, isSelected: checked } : item
         );
-
+ 
         // Find all selected rows in the calculated next state
         const selected = updatedData.filter((item) => item.isSelected);
-
+ 
         // 🔼 Send selected rows back to parent (DistributeTable)
         if (onSelectionChange) {
             onSelectionChange(selected);
         }
-        
+       
         // Return the new state
         return updatedData;
     });
   };
-
-
+ 
+ 
   // Apply updates returned from the form (and/or call your update API here)
   const handleUpdate = (updatedRow) => {
     setData((prev) =>
@@ -152,23 +153,23 @@ const {data: amounts,refetch: refetchApplicationFeeAmount} = useGetAllFeeAmounts
       )
     );
   };
-
+ 
   // ---- Modal wiring (outside TableWidget) ----
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
-
+ 
   // TableWidget calls this when user clicks "Update" for a row
   const handleRowUpdateClick = async (row) => {
   console.log("Row Selected:", row);
   // const distributionId = await useGetDistributionId()
   setOpeningForm(true);
   setSelectedRow(row);
-
-
+ 
+ 
   setOpen(true);
   setOpeningForm(false);
 };
-
+ 
   // Map table fields -> form fields for initialValues
   const fieldMapping = {
     applicationNoFrom: "applicationNoFrom",
@@ -182,7 +183,7 @@ const {data: amounts,refetch: refetchApplicationFeeAmount} = useGetAllFeeAmounts
     mobileNumber: "mobileNumber",
     stateName: "stateName",
   };
-
+ 
   // ---- Loading & error states ----
  
   // ---------------------------------------------------
@@ -192,12 +193,12 @@ const {data: amounts,refetch: refetchApplicationFeeAmount} = useGetAllFeeAmounts
   if (error) {
     return <div style={{ padding: 16, color: "red" }}>Failed to load data.</div>;
   }
-
+ 
   console.log("Selected Row: ", selectedRow);
-
+ 
   return (
     <>
-
+ 
   {openingForm && (
         <div
           style={{
@@ -210,7 +211,7 @@ const {data: amounts,refetch: refetchApplicationFeeAmount} = useGetAllFeeAmounts
           <Spinner size="large" />
         </div>
       )}
-
+ 
  {!openingForm && (
         <TableWidget
           columns={columns}
@@ -223,7 +224,7 @@ const {data: amounts,refetch: refetchApplicationFeeAmount} = useGetAllFeeAmounts
           onRowUpdateClick={handleRowUpdateClick}
         />
       )}
-
+ 
       <DistributionUpdateForm
         open={open}
         onClose={() => setOpen(false)}
@@ -235,5 +236,6 @@ const {data: amounts,refetch: refetchApplicationFeeAmount} = useGetAllFeeAmounts
     </>
   );
 };
-
+ 
 export default ZoneTable;
+ 
